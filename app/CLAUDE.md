@@ -1,0 +1,1 @@
+- Cada vez que se modifique un archivo .kt, corre la aplicación solo si tiene conectada la computadora un teléfono físico.

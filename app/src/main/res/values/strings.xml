@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name" translatable="false">Textify</string>
+    <string name="home_placeholder">Toca para empezar a dictar</string>
+</resources>
