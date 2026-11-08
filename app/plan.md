@@ -287,7 +287,7 @@ com.<tuapp>.textify
 | Etapa | Estado | Tests pasando | Fecha |
 |---|---|---|---|
 | 0. Base del proyecto | ☑ | 5/5 | 2026-11-08 |
-| 1. Modelo y persistencia | ☐ | | |
+| 1. Modelo y persistencia | ☑ | 25/25 | 2026-11-08 |
 | 2. Motor de voz | ☐ | | |
 | 3. Permiso de micrófono | ☐ | | |
 | 4. Grabación y transcripción | ☐ | | |
