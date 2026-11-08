@@ -1,8 +1,22 @@
 <resources>
     <string name="app_name" translatable="false">Textify</string>
-    <string name="home_placeholder">Toca para empezar a dictar</string>
     <string name="mic_permission_rationale">Textify necesita el micrófono para convertir tu voz en texto. El audio no se guarda.</string>
     <string name="mic_permission_request_button">Dar permiso</string>
     <string name="mic_permission_denied_permanently">Denegaste el permiso de micrófono. Para dictar, actívalo en los ajustes de la app.</string>
     <string name="mic_permission_open_settings_button">Abrir ajustes</string>
+
+    <string name="record_idle_hint">Toca para empezar a dictar</string>
+    <string name="record_listening_hint">Escuchando…</string>
+    <string name="record_mic_button_description">Grabar</string>
+    <string name="record_stop_button_description">Detener</string>
+    <string name="record_again_button">Grabar de nuevo</string>
+    <string name="record_retry_button">Reintentar</string>
+
+    <string name="error_no_match">No se entendió lo que dijiste. Intenta de nuevo.</string>
+    <string name="error_no_speech">No se detectó voz. Intenta de nuevo.</string>
+    <string name="error_network_unavailable">No hay conexión a internet para reconocer la voz.</string>
+    <string name="error_busy">El reconocedor de voz está ocupado. Intenta de nuevo.</string>
+    <string name="error_permission_denied">Falta el permiso de micrófono.</string>
+    <string name="error_language_not_supported">El idioma de dictado no está disponible en este dispositivo.</string>
+    <string name="error_other">Ocurrió un error al reconocer la voz. Intenta de nuevo.</string>
 </resources>

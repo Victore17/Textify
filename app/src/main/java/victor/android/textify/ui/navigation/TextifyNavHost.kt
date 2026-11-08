@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
-import victor.android.textify.ui.home.HomeScreen
+import victor.android.textify.ui.record.RecordRoute
 
 /** Destinos de navegación (rutas con tipo). Se agregan más en etapas siguientes. */
 @Serializable
@@ -23,7 +23,7 @@ fun TextifyNavHost(
         modifier = modifier,
     ) {
         composable<HomeRoute> {
-            HomeScreen()
+            RecordRoute()
         }
     }
 }

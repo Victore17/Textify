@@ -1,7 +1,21 @@
 <resources>
-    <string name="home_placeholder">Tap to start dictating</string>
     <string name="mic_permission_rationale">Textify needs the microphone to turn your voice into text. The audio is never saved.</string>
     <string name="mic_permission_request_button">Grant permission</string>
     <string name="mic_permission_denied_permanently">You denied the microphone permission. To dictate, enable it in the app settings.</string>
     <string name="mic_permission_open_settings_button">Open settings</string>
+
+    <string name="record_idle_hint">Tap to start dictating</string>
+    <string name="record_listening_hint">Listening…</string>
+    <string name="record_mic_button_description">Record</string>
+    <string name="record_stop_button_description">Stop</string>
+    <string name="record_again_button">Record again</string>
+    <string name="record_retry_button">Retry</string>
+
+    <string name="error_no_match">We could not understand what you said. Try again.</string>
+    <string name="error_no_speech">No speech was detected. Try again.</string>
+    <string name="error_network_unavailable">There is no internet connection to recognize speech.</string>
+    <string name="error_busy">The speech recognizer is busy. Try again.</string>
+    <string name="error_permission_denied">Microphone permission is missing.</string>
+    <string name="error_language_not_supported">The dictation language is not available on this device.</string>
+    <string name="error_other">An error occurred recognizing speech. Try again.</string>
 </resources>

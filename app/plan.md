@@ -290,7 +290,7 @@ com.<tuapp>.textify
 | 1. Modelo y persistencia | ☑ | 25/25 | 2026-11-08 |
 | 2. Motor de voz | ☑ | 55/55 | 2026-11-08 |
 | 3. Permiso de micrófono | ☑ | 65/65 | 2026-11-08 |
-| 4. Grabación y transcripción | ☐ | | |
+| 4. Grabación y transcripción | ☑ | 75/75 | 2026-11-08 |
 | 5. Guardar / compartir / cancelar | ☐ | | |
 | 6. Lista de notas | ☐ | | |
 | 7. Ajustes | ☐ | | |

@@ -1,0 +1,78 @@
+package victor.android.textify.ui.record
+
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import victor.android.textify.speech.SpeechError
+import victor.android.textify.speech.SpeechState
+import victor.android.textify.speech.SpeechToTextEngine
+import javax.inject.Inject
+
+@HiltViewModel
+class RecordViewModel @Inject constructor(
+    private val speechToTextEngine: SpeechToTextEngine,
+    private val savedStateHandle: SavedStateHandle,
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(
+        savedStateHandle.get<String>(KEY_REVIEW_TEXT)?.let { RecordUiState.Review(it) }
+            ?: RecordUiState.Idle,
+    )
+    val uiState: StateFlow<RecordUiState> = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            speechToTextEngine.state.collect(::onSpeechState)
+        }
+    }
+
+    fun onRecordClick() {
+        savedStateHandle[KEY_REVIEW_TEXT] = null
+        _uiState.value = RecordUiState.Listening()
+        speechToTextEngine.start(DEFAULT_LANGUAGE_TAG)
+    }
+
+    fun onStopClick() {
+        speechToTextEngine.stop()
+    }
+
+    fun onRetry() {
+        savedStateHandle[KEY_REVIEW_TEXT] = null
+        _uiState.value = RecordUiState.Idle
+    }
+
+    public override fun onCleared() {
+        speechToTextEngine.release()
+    }
+
+    private fun onSpeechState(state: SpeechState) {
+        when (state) {
+            is SpeechState.Idle -> Unit
+            is SpeechState.Listening -> _uiState.value = RecordUiState.Listening()
+            is SpeechState.Partial -> _uiState.value = RecordUiState.Listening(state.text)
+            is SpeechState.Result -> onResult(state.text)
+            is SpeechState.Error -> _uiState.value = RecordUiState.Error(state.type)
+        }
+    }
+
+    private fun onResult(rawText: String) {
+        val text = rawText.trim()
+        _uiState.value = if (text.isEmpty()) {
+            RecordUiState.Error(SpeechError.NO_SPEECH)
+        } else {
+            savedStateHandle[KEY_REVIEW_TEXT] = text
+            RecordUiState.Review(text)
+        }
+    }
+
+    companion object {
+        // Hasta que la etapa 7 agregue los ajustes de idioma, se dicta en español de México.
+        const val DEFAULT_LANGUAGE_TAG = "es-MX"
+        private const val KEY_REVIEW_TEXT = "review_text"
+    }
+}

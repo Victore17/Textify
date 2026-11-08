@@ -53,7 +53,9 @@ class HiltSmokeTest {
 
     @Test
     fun `MainActivity arranca con Hilt y muestra el NavHost`() {
-        val placeholder = composeRule.activity.getString(R.string.home_placeholder)
-        composeRule.onNodeWithText(placeholder).assertExists()
+        // Sin el permiso de micrófono concedido (no se otorga por defecto en Robolectric),
+        // el NavHost muestra la pantalla que lo pide antes de la de grabación.
+        val rationale = composeRule.activity.getString(R.string.mic_permission_rationale)
+        composeRule.onNodeWithText(rationale).assertExists()
     }
 }
