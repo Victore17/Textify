@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">Textify</string>
     <string name="home_placeholder">Toca para empezar a dictar</string>
+    <string name="mic_permission_rationale">Textify necesita el micrófono para convertir tu voz en texto. El audio no se guarda.</string>
+    <string name="mic_permission_request_button">Dar permiso</string>
+    <string name="mic_permission_denied_permanently">Denegaste el permiso de micrófono. Para dictar, actívalo en los ajustes de la app.</string>
+    <string name="mic_permission_open_settings_button">Abrir ajustes</string>
 </resources>

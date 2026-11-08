@@ -289,7 +289,7 @@ com.<tuapp>.textify
 | 0. Base del proyecto | ☑ | 5/5 | 2026-11-08 |
 | 1. Modelo y persistencia | ☑ | 25/25 | 2026-11-08 |
 | 2. Motor de voz | ☑ | 55/55 | 2026-11-08 |
-| 3. Permiso de micrófono | ☐ | | |
+| 3. Permiso de micrófono | ☑ | 65/65 | 2026-11-08 |
 | 4. Grabación y transcripción | ☐ | | |
 | 5. Guardar / compartir / cancelar | ☐ | | |
 | 6. Lista de notas | ☐ | | |

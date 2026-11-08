@@ -1,3 +1,7 @@
 <resources>
     <string name="home_placeholder">Tap to start dictating</string>
+    <string name="mic_permission_rationale">Textify needs the microphone to turn your voice into text. The audio is never saved.</string>
+    <string name="mic_permission_request_button">Grant permission</string>
+    <string name="mic_permission_denied_permanently">You denied the microphone permission. To dictate, enable it in the app settings.</string>
+    <string name="mic_permission_open_settings_button">Open settings</string>
 </resources>
