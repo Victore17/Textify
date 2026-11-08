@@ -1,1 +1,2 @@
 - Cada vez que se modifique un archivo .kt, corre la aplicación solo si tiene conectada la computadora un teléfono físico.
+- Los commits deben estar en inglés, con un límite de 40 caracteres.
