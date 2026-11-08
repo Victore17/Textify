@@ -16,3 +16,11 @@ local.properties
 .kotlin
 *.keystore
 *.jks
+
+# Notas locales de IA y planificación
+CLAUDE.md
+claude.md
+plan.md
+
+# Configuración local de Android Studio
+.idea/
