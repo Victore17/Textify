@@ -68,30 +68,97 @@ class AndroidSpeechToTextEngineTest {
     }
 
     @Test
-    fun `los callbacks del reconocedor producen los estados correctos`() {
+    fun `los resultados parciales se muestran mientras se escucha`() {
         engine.start("es-MX")
         val listener = factory.created.single().listener.captured
 
         listener.onPartialResults(results("hola"))
-        assertEquals(SpeechState.Partial("hola"), engine.state.value)
 
-        listener.onResults(results("hola mundo"))
+        assertEquals(SpeechState.Partial("hola"), engine.state.value)
+    }
+
+    @Test
+    fun `un resultado final sin haber pedido detener no finaliza y reinicia la escucha`() {
+        engine.start("es-MX")
+        val first = factory.created.single()
+
+        first.listener.captured.onResults(results("hola"))
+
+        assertTrue(engine.state.value !is SpeechState.Result)
+        assertEquals(2, factory.created.size)
+        verify { first.recognizer.destroy() }
+        assertIntent(factory.created[1].intent.captured, "es-MX")
+    }
+
+    @Test
+    fun `el texto de sub-sesiones anteriores se conserva al reiniciar automaticamente`() {
+        engine.start("es-MX")
+        factory.created.single().listener.captured.onResults(results("hola"))
+
+        factory.created[1].listener.captured.onPartialResults(results("mundo"))
+
+        assertEquals(SpeechState.Partial("hola mundo"), engine.state.value)
+    }
+
+    @Test
+    fun `despues de pedir detener, el resultado final entrega todo lo reconocido`() {
+        engine.start("es-MX")
+        factory.created.single().listener.captured.onResults(results("hola"))
+
+        engine.stop()
+        factory.created[1].listener.captured.onResults(results("mundo"))
+
         assertEquals(SpeechState.Result("hola mundo"), engine.state.value)
     }
 
     @Test
-    fun `onError produce Error`() {
+    fun `un error de silencio sin haber pedido detener reinicia la escucha en vez de mostrar error`() {
+        engine.start("es-MX")
+        val first = factory.created.single()
+
+        first.listener.captured.onError(SpeechRecognizer.ERROR_SPEECH_TIMEOUT)
+
+        assertTrue(engine.state.value !is SpeechState.Error)
+        assertEquals(2, factory.created.size)
+        verify { first.recognizer.destroy() }
+    }
+
+    @Test
+    fun `un error de silencio despues de pedir detener entrega lo ya reconocido`() {
+        engine.start("es-MX")
+        factory.created.single().listener.captured.onResults(results("hola"))
+
+        engine.stop()
+        factory.created[1].listener.captured.onError(SpeechRecognizer.ERROR_NO_MATCH)
+
+        assertEquals(SpeechState.Result("hola"), engine.state.value)
+    }
+
+    @Test
+    fun `un error de silencio despues de pedir detener sin texto previo se reporta`() {
         engine.start("es-MX")
 
+        engine.stop()
         factory.created.single().listener.captured.onError(SpeechRecognizer.ERROR_SPEECH_TIMEOUT)
 
         assertEquals(SpeechState.Error(SpeechError.NO_SPEECH), engine.state.value)
     }
 
     @Test
+    fun `un error real como falta de red se reporta sin reiniciar`() {
+        engine.start("es-MX")
+
+        factory.created.single().listener.captured.onError(SpeechRecognizer.ERROR_NETWORK)
+
+        assertEquals(SpeechState.Error(SpeechError.NETWORK_UNAVAILABLE), engine.state.value)
+        assertEquals(1, factory.created.size)
+    }
+
+    @Test
     fun `un error despues del resultado final se ignora`() {
         engine.start("es-MX")
         val listener = factory.created.single().listener.captured
+        engine.stop()
 
         listener.onResults(results("hola"))
         listener.onError(SpeechRecognizer.ERROR_CLIENT)

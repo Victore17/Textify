@@ -18,6 +18,10 @@ import javax.inject.Inject
  * - Pide resultados parciales para mostrar la transcripción en vivo.
  * - No graba ni guarda audio: no usa `MediaRecorder` ni `AudioRecord` y no pide el audio
  *   al reconocedor. Solo recibe texto.
+ * - El reconocedor nativo de Android corta solo la sesión tras un silencio. Para que sea el
+ *   usuario quien decida cuándo detenerse, [handleState] distingue si [stop] ya fue pedido: si
+ *   no, un resultado final o un error de silencio solo guardan lo reconocido hasta ahora y
+ *   reinician la escucha sin que el usuario lo note.
  *
  * Debe usarse desde el hilo principal, como exige [SpeechRecognizer].
  */
@@ -34,8 +38,16 @@ class AndroidSpeechToTextEngine @Inject constructor(
     /** Listener de la sesión activa; los callbacks de sesiones anteriores se descartan. */
     private var activeListener: RecognitionStateListener? = null
 
+    /** Si el usuario ya pidió detener la escucha con [stop]. */
+    private var stopRequested = false
+
+    /** Texto ya confirmado en sub-sesiones anteriores de esta grabación. */
+    private var confirmedText = ""
+
     override fun start(languageTag: String) {
         destroyRecognizer()
+        stopRequested = false
+        confirmedText = ""
         val onDevice = factory.isOnDeviceAvailable()
         if (!onDevice && !factory.isStandardAvailable()) {
             _state.value = SpeechState.Error(SpeechError.OTHER)
@@ -46,11 +58,14 @@ class AndroidSpeechToTextEngine @Inject constructor(
     }
 
     override fun stop() {
+        stopRequested = true
         recognizer?.stopListening()
     }
 
     override fun release() {
         destroyRecognizer()
+        stopRequested = false
+        confirmedText = ""
         _state.value = SpeechState.Idle
     }
 
@@ -80,7 +95,26 @@ class AndroidSpeechToTextEngine @Inject constructor(
                 startSession(languageTag, onDevice = false)
             }
 
-            else -> _state.value = newState
+            // El usuario no pidió detenerse: el reconocedor terminó solo por un silencio.
+            // Se guarda lo reconocido y se reinicia la escucha sin interrumpir al usuario.
+            !stopRequested && newState is SpeechState.Result -> {
+                confirmedText = joinSpeechText(confirmedText, newState.text)
+                destroyRecognizer()
+                startSession(languageTag, onDevice)
+            }
+            !stopRequested && newState is SpeechState.Error && isAutoStopError(newState.type) -> {
+                destroyRecognizer()
+                startSession(languageTag, onDevice)
+            }
+
+            else -> _state.value = when (newState) {
+                is SpeechState.Partial -> SpeechState.Partial(joinSpeechText(confirmedText, newState.text))
+                is SpeechState.Result -> SpeechState.Result(joinSpeechText(confirmedText, newState.text))
+                is SpeechState.Listening ->
+                    if (confirmedText.isEmpty()) newState else SpeechState.Partial(confirmedText)
+                is SpeechState.Error -> if (confirmedText.isEmpty()) newState else SpeechState.Result(confirmedText)
+                is SpeechState.Idle -> newState
+            }
         }
     }
 
@@ -91,6 +125,21 @@ class AndroidSpeechToTextEngine @Inject constructor(
             it.destroy()
         }
         recognizer = null
+    }
+}
+
+/** Errores que el reconocedor dispara solo porque detectó silencio, no por una falla real. */
+private fun isAutoStopError(error: SpeechError): Boolean =
+    error == SpeechError.NO_SPEECH || error == SpeechError.NO_MATCH
+
+/** Une el texto confirmado de sub-sesiones anteriores con el de la sesión actual. */
+private fun joinSpeechText(confirmed: String, current: String): String {
+    val left = confirmed.trim()
+    val right = current.trim()
+    return when {
+        left.isEmpty() -> right
+        right.isEmpty() -> left
+        else -> "$left $right"
     }
 }
 
