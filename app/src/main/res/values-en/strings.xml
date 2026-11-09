@@ -22,4 +22,17 @@
     <string name="error_permission_denied">Microphone permission is missing.</string>
     <string name="error_language_not_supported">The dictation language is not available on this device.</string>
     <string name="error_other">An error occurred recognizing speech. Try again.</string>
+
+    <string name="record_tab_label">Record</string>
+    <string name="notes_tab_label">Notes</string>
+    <string name="notes_search_placeholder">Search notes</string>
+    <string name="notes_empty_message">You don\'t have any saved notes yet.</string>
+    <string name="notes_empty_record_button">Record a note</string>
+    <string name="notes_share_description">Share</string>
+    <string name="notes_copy_description">Copy</string>
+    <string name="notes_delete_description">Delete</string>
+    <string name="notes_close_button">Close</string>
+    <string name="notes_deleted_message">Note deleted</string>
+    <string name="notes_undo_button">Undo</string>
+    <string name="notes_copy_success">Text copied</string>
 </resources>

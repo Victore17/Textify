@@ -23,4 +23,17 @@
     <string name="error_permission_denied">Falta el permiso de micrófono.</string>
     <string name="error_language_not_supported">El idioma de dictado no está disponible en este dispositivo.</string>
     <string name="error_other">Ocurrió un error al reconocer la voz. Intenta de nuevo.</string>
+
+    <string name="record_tab_label">Grabar</string>
+    <string name="notes_tab_label">Notas</string>
+    <string name="notes_search_placeholder">Buscar notas</string>
+    <string name="notes_empty_message">Todavía no tienes notas guardadas.</string>
+    <string name="notes_empty_record_button">Grabar una nota</string>
+    <string name="notes_share_description">Compartir</string>
+    <string name="notes_copy_description">Copiar</string>
+    <string name="notes_delete_description">Borrar</string>
+    <string name="notes_close_button">Cerrar</string>
+    <string name="notes_deleted_message">Nota borrada</string>
+    <string name="notes_undo_button">Deshacer</string>
+    <string name="notes_copy_success">Texto copiado</string>
 </resources>

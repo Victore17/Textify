@@ -292,7 +292,7 @@ com.<tuapp>.textify
 | 3. Permiso de micrófono | ☑ | 65/65 | 2026-11-08 |
 | 4. Grabación y transcripción | ☑ | 75/75 | 2026-11-08 |
 | 5. Guardar / compartir / cancelar | ☑ | 82/82 | 2026-11-08 |
-| 6. Lista de notas | ☐ | | |
+| 6. Lista de notas | ☑ | 93/93 | 2026-11-08 |
 | 7. Ajustes | ☐ | | |
 | 8. Pulido y calidad | ☐ | | |
 | 9. Publicación | ☐ | | |

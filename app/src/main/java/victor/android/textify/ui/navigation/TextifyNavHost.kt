@@ -2,15 +2,20 @@ package victor.android.textify.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
+import victor.android.textify.ui.notes.NotesScreen
 import victor.android.textify.ui.record.RecordRoute
 
-/** Destinos de navegación (rutas con tipo). Se agregan más en etapas siguientes. */
+/** Destinos de navegación (rutas con tipo). */
 @Serializable
 data object HomeRoute
+
+@Serializable
+data object NotesRoute
 
 @Composable
 fun TextifyNavHost(
@@ -25,5 +30,16 @@ fun TextifyNavHost(
         composable<HomeRoute> {
             RecordRoute()
         }
+        composable<NotesRoute> {
+            NotesScreen(onNavigateToRecord = { navController.navigateToTab(HomeRoute) })
+        }
+    }
+}
+
+inline fun <reified T : Any> NavHostController.navigateToTab(route: T) {
+    navigate(route) {
+        popUpTo(graph.findStartDestination().id) { saveState = true }
+        launchSingleTop = true
+        restoreState = true
     }
 }
