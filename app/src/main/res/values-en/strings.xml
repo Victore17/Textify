@@ -8,8 +8,12 @@
     <string name="record_listening_hint">Listening…</string>
     <string name="record_mic_button_description">Record</string>
     <string name="record_stop_button_description">Stop</string>
-    <string name="record_again_button">Record again</string>
     <string name="record_retry_button">Retry</string>
+    <string name="record_save_button">Save</string>
+    <string name="record_share_button">Share</string>
+    <string name="record_cancel_button">Cancel</string>
+    <string name="record_save_success">Note saved</string>
+    <string name="record_save_error">The note could not be saved. Try again.</string>
 
     <string name="error_no_match">We could not understand what you said. Try again.</string>
     <string name="error_no_speech">No speech was detected. Try again.</string>

@@ -291,7 +291,7 @@ com.<tuapp>.textify
 | 2. Motor de voz | ☑ | 55/55 | 2026-11-08 |
 | 3. Permiso de micrófono | ☑ | 65/65 | 2026-11-08 |
 | 4. Grabación y transcripción | ☑ | 75/75 | 2026-11-08 |
-| 5. Guardar / compartir / cancelar | ☐ | | |
+| 5. Guardar / compartir / cancelar | ☑ | 82/82 | 2026-11-08 |
 | 6. Lista de notas | ☐ | | |
 | 7. Ajustes | ☐ | | |
 | 8. Pulido y calidad | ☐ | | |
@@ -299,7 +299,7 @@ com.<tuapp>.textify
 
 ## Decisiones abiertas (resolver al llegar a la etapa)
 
-- ¿Pedir confirmación al cancelar un texto? (etapa 5)
+- ~~¿Pedir confirmación al cancelar un texto? (etapa 5)~~ **Resuelto:** no se pide confirmación; "Cancelar" borra el texto en memoria de inmediato y vuelve a `Idle`. Es texto sin guardar y de bajo costo de recuperación (basta con grabar de nuevo), así que una confirmación solo añadiría un paso sin beneficio real.
 - ¿Dictado continuo (reiniciar el reconocedor tras silencios) o una sola frase por grabación? (etapa 4)
 - ¿Idiomas adicionales además de es-MX y en-US? (etapa 7)
 - ~~¿Reconocimiento solo en el dispositivo o con respaldo a servidores de Google? (etapa 2)~~ **Resuelto:** se usa el reconocedor en el dispositivo (API 31+) cuando existe; si no existe o no tiene el idioma, se recurre al reconocedor estándar del sistema, que puede enviar el audio a servidores de Google para transcribirlo. La política de privacidad (etapa 9) y la sección de privacidad de ajustes (etapa 7) deben decirlo.

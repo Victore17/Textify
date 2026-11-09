@@ -9,8 +9,12 @@
     <string name="record_listening_hint">Escuchando…</string>
     <string name="record_mic_button_description">Grabar</string>
     <string name="record_stop_button_description">Detener</string>
-    <string name="record_again_button">Grabar de nuevo</string>
     <string name="record_retry_button">Reintentar</string>
+    <string name="record_save_button">Guardar</string>
+    <string name="record_share_button">Compartir</string>
+    <string name="record_cancel_button">Cancelar</string>
+    <string name="record_save_success">Nota guardada</string>
+    <string name="record_save_error">No se pudo guardar la nota. Intenta de nuevo.</string>
 
     <string name="error_no_match">No se entendió lo que dijiste. Intenta de nuevo.</string>
     <string name="error_no_speech">No se detectó voz. Intenta de nuevo.</string>
