@@ -1,6 +1,5 @@
 package victor.android.textify.ui.record
 
-import android.content.Intent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -41,7 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,7 +50,6 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import victor.android.textify.R
 import victor.android.textify.speech.SpeechError
 import victor.android.textify.ui.theme.TextifyTheme
-import victor.android.textify.util.createShareTextIntent
 
 @Composable
 fun RecordScreen(
@@ -60,7 +57,6 @@ fun RecordScreen(
     viewModel: RecordViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val saveSuccessMessage = stringResource(R.string.record_save_success)
 
@@ -89,9 +85,6 @@ fun RecordScreen(
             onRetry = viewModel::onRetry,
             onSaveClick = viewModel::onSaveClick,
             onCancelClick = viewModel::onCancelClick,
-            onShareClick = { text ->
-                context.startActivity(Intent.createChooser(createShareTextIntent(text), null))
-            },
             modifier = Modifier.fillMaxSize(),
         )
         SnackbarHost(hostState = snackbarHostState, modifier = Modifier.align(Alignment.BottomCenter))
@@ -106,7 +99,6 @@ private fun RecordScreen(
     onRetry: () -> Unit,
     onSaveClick: () -> Unit,
     onCancelClick: () -> Unit,
-    onShareClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -119,7 +111,7 @@ private fun RecordScreen(
             when (state) {
                 is RecordUiState.Idle -> IdleContent(onRecordClick)
                 is RecordUiState.Listening -> ListeningContent(state.partialText, onStopClick)
-                is RecordUiState.Review -> ReviewContent(state, onSaveClick, onShareClick, onCancelClick)
+                is RecordUiState.Review -> ReviewContent(state, onSaveClick, onCancelClick)
                 is RecordUiState.Error -> ErrorContent(state.error, onRetry)
             }
         }
@@ -178,7 +170,6 @@ private fun ListeningContent(partialText: String, onStopClick: () -> Unit) {
 private fun ReviewContent(
     state: RecordUiState.Review,
     onSaveClick: () -> Unit,
-    onShareClick: (String) -> Unit,
     onCancelClick: () -> Unit,
 ) {
     Column(
@@ -206,9 +197,6 @@ private fun ReviewContent(
                 } else {
                     Text(stringResource(R.string.record_save_button))
                 }
-            }
-            OutlinedButton(onClick = { onShareClick(state.text) }) {
-                Text(stringResource(R.string.record_share_button))
             }
             OutlinedButton(onClick = onCancelClick) {
                 Text(stringResource(R.string.record_cancel_button))
@@ -262,31 +250,31 @@ private fun errorMessageRes(error: SpeechError): Int = when (error) {
 @Preview(showBackground = true)
 @Composable
 private fun RecordScreenIdlePreview() {
-    TextifyTheme { RecordScreen(RecordUiState.Idle, {}, {}, {}, {}, {}, {}) }
+    TextifyTheme { RecordScreen(RecordUiState.Idle, {}, {}, {}, {}, {}) }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun RecordScreenListeningPreview() {
-    TextifyTheme { RecordScreen(RecordUiState.Listening("hola mundo"), {}, {}, {}, {}, {}, {}) }
+    TextifyTheme { RecordScreen(RecordUiState.Listening("hola mundo"), {}, {}, {}, {}, {}) }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun RecordScreenReviewPreview() {
-    TextifyTheme { RecordScreen(RecordUiState.Review("Texto transcrito final"), {}, {}, {}, {}, {}, {}) }
+    TextifyTheme { RecordScreen(RecordUiState.Review("Texto transcrito final"), {}, {}, {}, {}, {}) }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun RecordScreenReviewErrorPreview() {
     TextifyTheme {
-        RecordScreen(RecordUiState.Review("Texto transcrito final", saveError = true), {}, {}, {}, {}, {}, {})
+        RecordScreen(RecordUiState.Review("Texto transcrito final", saveError = true), {}, {}, {}, {}, {})
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun RecordScreenErrorPreview() {
-    TextifyTheme { RecordScreen(RecordUiState.Error(SpeechError.NO_SPEECH), {}, {}, {}, {}, {}, {}) }
+    TextifyTheme { RecordScreen(RecordUiState.Error(SpeechError.NO_SPEECH), {}, {}, {}, {}, {}) }
 }

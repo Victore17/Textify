@@ -1,16 +1,21 @@
 package victor.android.textify.ui.notes
 
 import android.content.Intent
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -22,8 +27,10 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
@@ -41,8 +48,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -141,6 +150,8 @@ private fun NotesScreen(
             is NotesUiState.Content -> NotesList(
                 notes = uiState.notes,
                 onNoteClick = { selectedNote = it },
+                onShareNote = onShareNote,
+                onDeleteNote = onDeleteNote,
                 modifier = Modifier.fillMaxSize(),
             )
         }
@@ -192,6 +203,8 @@ private fun EmptyNotesContent(onNavigateToRecord: () -> Unit, modifier: Modifier
 private fun NotesList(
     notes: List<Note>,
     onNoteClick: (Note) -> Unit,
+    onShareNote: (Note) -> Unit,
+    onDeleteNote: (Note) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -200,17 +213,95 @@ private fun NotesList(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(notes, key = { it.id }) { note ->
-            NoteListItem(note = note, onClick = { onNoteClick(note) })
+            NoteListItem(
+                note = note,
+                onClick = { onNoteClick(note) },
+                onShare = { onShareNote(note) },
+                onDelete = { onDeleteNote(note) },
+            )
+        }
+    }
+}
+
+private val SwipeActionWidth = 72.dp
+private val SwipeActionsWidth = SwipeActionWidth * 2
+
+@Composable
+private fun NoteListItem(
+    note: Note,
+    onClick: () -> Unit,
+    onShare: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    var revealed by remember(note.id) { mutableStateOf(false) }
+    val offsetX by animateDpAsState(targetValue = if (revealed) -SwipeActionsWidth else 0.dp, label = "note_swipe_offset")
+    val dragThresholdPx = with(LocalDensity.current) { 2.dp.toPx() }
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.matchParentSize(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            SwipeActionButton(
+                icon = Icons.Filled.Share,
+                contentDescription = stringResource(R.string.notes_share_description),
+                onClick = {
+                    revealed = false
+                    onShare()
+                },
+            )
+            SwipeActionButton(
+                icon = Icons.Filled.Delete,
+                contentDescription = stringResource(R.string.notes_delete_description),
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                onClick = {
+                    revealed = false
+                    onDelete()
+                },
+            )
+        }
+        Card(
+            onClick = { if (revealed) revealed = false else onClick() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(x = offsetX)
+                .pointerInput(note.id) {
+                    detectHorizontalDragGestures { change, dragAmount ->
+                        change.consume()
+                        if (dragAmount < -dragThresholdPx) revealed = true
+                        else if (dragAmount > dragThresholdPx) revealed = false
+                    }
+                },
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(text = formatNoteDate(note.createdAt), style = MaterialTheme.typography.labelMedium)
+                Text(text = note.text, style = MaterialTheme.typography.bodyLarge, maxLines = 2)
+            }
         }
     }
 }
 
 @Composable
-private fun NoteListItem(note: Note, onClick: () -> Unit) {
-    Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = formatNoteDate(note.createdAt), style = MaterialTheme.typography.labelMedium)
-            Text(text = note.text, style = MaterialTheme.typography.bodyLarge, maxLines = 2)
+private fun SwipeActionButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit,
+    containerColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.secondaryContainer,
+    contentColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onSecondaryContainer,
+) {
+    Box(
+        modifier = Modifier.fillMaxHeight().width(SwipeActionWidth),
+        contentAlignment = Alignment.Center,
+    ) {
+        FilledTonalIconButton(
+            onClick = onClick,
+            colors = IconButtonDefaults.filledTonalIconButtonColors(
+                containerColor = containerColor,
+                contentColor = contentColor,
+            ),
+        ) {
+            Icon(imageVector = icon, contentDescription = contentDescription)
         }
     }
 }

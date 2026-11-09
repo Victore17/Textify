@@ -11,7 +11,6 @@
     <string name="record_stop_button_description">Detener</string>
     <string name="record_retry_button">Reintentar</string>
     <string name="record_save_button">Guardar</string>
-    <string name="record_share_button">Compartir</string>
     <string name="record_cancel_button">Cancelar</string>
     <string name="record_save_success">Nota guardada</string>
     <string name="record_save_error">No se pudo guardar la nota. Intenta de nuevo.</string>

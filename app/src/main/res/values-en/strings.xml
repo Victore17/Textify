@@ -10,7 +10,6 @@
     <string name="record_stop_button_description">Stop</string>
     <string name="record_retry_button">Retry</string>
     <string name="record_save_button">Save</string>
-    <string name="record_share_button">Share</string>
     <string name="record_cancel_button">Cancel</string>
     <string name="record_save_success">Note saved</string>
     <string name="record_save_error">The note could not be saved. Try again.</string>
