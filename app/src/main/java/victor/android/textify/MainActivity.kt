@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import dagger.hilt.android.AndroidEntryPoint
 import victor.android.textify.ui.TextifyApp
-import victor.android.textify.ui.theme.TextifyTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -14,9 +13,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TextifyTheme {
-                TextifyApp()
-            }
+            TextifyApp()
         }
     }
 }

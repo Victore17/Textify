@@ -10,9 +10,12 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import victor.android.textify.domain.model.AppLanguage
 import victor.android.textify.domain.model.Note
 import victor.android.textify.domain.repository.NotesRepository
+import victor.android.textify.domain.repository.SettingsRepository
 import victor.android.textify.speech.SpeechError
+import victor.android.textify.testutil.FakeSettingsRepository
 import victor.android.textify.testutil.FakeSpeechToTextEngine
 import victor.android.textify.testutil.MainDispatcherRule
 import java.time.Instant
@@ -24,9 +27,12 @@ class RecordViewModelTest {
 
     private val engine = FakeSpeechToTextEngine()
     private val notesRepository = mockk<NotesRepository>()
+    private val settingsRepository = FakeSettingsRepository()
 
-    private fun viewModel(savedStateHandle: SavedStateHandle = SavedStateHandle()) =
-        RecordViewModel(engine, notesRepository, savedStateHandle)
+    private fun viewModel(
+        savedStateHandle: SavedStateHandle = SavedStateHandle(),
+        settingsRepository: SettingsRepository = this.settingsRepository,
+    ) = RecordViewModel(engine, notesRepository, settingsRepository, savedStateHandle)
 
     @Test
     fun `estado inicial es Idle`() {
@@ -42,7 +48,40 @@ class RecordViewModelTest {
         viewModel.onRecordClick()
 
         assertEquals(RecordUiState.Listening(), viewModel.uiState.value)
-        assertEquals(listOf(RecordViewModel.DEFAULT_LANGUAGE_TAG), engine.startedLanguages)
+        assertEquals(listOf(AppLanguage.ES_MX.tag), engine.startedLanguages)
+    }
+
+    @Test
+    fun `usa el idioma guardado en los ajustes al llamar a start`() {
+        val settings = FakeSettingsRepository(initialLanguage = AppLanguage.EN_US)
+        val viewModel = viewModel(settingsRepository = settings)
+
+        viewModel.onRecordClick()
+
+        assertEquals(listOf(AppLanguage.EN_US.tag), engine.startedLanguages)
+    }
+
+    @Test
+    fun `cambiar el idioma en ajustes se refleja en la siguiente grabacion`() = runTest {
+        val settings = FakeSettingsRepository()
+        val viewModel = viewModel(settingsRepository = settings)
+        viewModel.onRecordClick()
+        engine.emitResult("hola")
+
+        settings.setLanguage(AppLanguage.EN_US)
+        viewModel.onRecordClick()
+
+        assertEquals(listOf(AppLanguage.ES_MX.tag, AppLanguage.EN_US.tag), engine.startedLanguages)
+    }
+
+    @Test
+    fun `idioma no disponible produce el estado de error esperado`() {
+        val viewModel = viewModel()
+        viewModel.onRecordClick()
+
+        engine.emitError(SpeechError.LANGUAGE_NOT_SUPPORTED)
+
+        assertEquals(RecordUiState.Error(SpeechError.LANGUAGE_NOT_SUPPORTED), viewModel.uiState.value)
     }
 
     @Test

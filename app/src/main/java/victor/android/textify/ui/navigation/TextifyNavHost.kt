@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
 import victor.android.textify.ui.notes.NotesScreen
 import victor.android.textify.ui.record.RecordRoute
+import victor.android.textify.ui.settings.SettingsScreen
 
 /** Destinos de navegación (rutas con tipo). */
 @Serializable
@@ -16,6 +17,9 @@ data object HomeRoute
 
 @Serializable
 data object NotesRoute
+
+@Serializable
+data object SettingsRoute
 
 @Composable
 fun TextifyNavHost(
@@ -32,6 +36,9 @@ fun TextifyNavHost(
         }
         composable<NotesRoute> {
             NotesScreen(onNavigateToRecord = { navController.navigateToTab(HomeRoute) })
+        }
+        composable<SettingsRoute> {
+            SettingsScreen()
         }
     }
 }

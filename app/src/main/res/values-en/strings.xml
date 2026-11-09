@@ -35,4 +35,15 @@
     <string name="notes_deleted_message">Note deleted</string>
     <string name="notes_undo_button">Undo</string>
     <string name="notes_copy_success">Text copied</string>
+
+    <string name="settings_tab_label">Settings</string>
+    <string name="settings_language_section">Dictation language</string>
+    <string name="settings_language_es_mx">Spanish (Mexico)</string>
+    <string name="settings_language_en_us">English (United States)</string>
+    <string name="settings_theme_section">Theme</string>
+    <string name="settings_theme_system">Same as system</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_privacy_title">Privacy</string>
+    <string name="settings_privacy_description">Your voice audio is never saved: it is only used to convert it into text, and no audio file is ever created, temporary or permanent. Recognition uses the on-device recognizer first and, if unavailable, the system\'s standard recognizer, which may send the audio to Google servers to transcribe it.</string>
 </resources>

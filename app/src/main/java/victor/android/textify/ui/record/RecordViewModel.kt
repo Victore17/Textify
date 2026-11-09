@@ -9,9 +9,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import victor.android.textify.domain.repository.NotesRepository
+import victor.android.textify.domain.repository.SettingsRepository
 import victor.android.textify.speech.SpeechError
 import victor.android.textify.speech.SpeechState
 import victor.android.textify.speech.SpeechToTextEngine
@@ -21,6 +23,7 @@ import javax.inject.Inject
 class RecordViewModel @Inject constructor(
     private val speechToTextEngine: SpeechToTextEngine,
     private val notesRepository: NotesRepository,
+    private val settingsRepository: SettingsRepository,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -42,7 +45,9 @@ class RecordViewModel @Inject constructor(
     fun onRecordClick() {
         savedStateHandle[KEY_REVIEW_TEXT] = null
         _uiState.value = RecordUiState.Listening()
-        speechToTextEngine.start(DEFAULT_LANGUAGE_TAG)
+        viewModelScope.launch {
+            speechToTextEngine.start(settingsRepository.language.first().tag)
+        }
     }
 
     fun onStopClick() {
@@ -99,8 +104,6 @@ class RecordViewModel @Inject constructor(
     }
 
     companion object {
-        // Hasta que la etapa 7 agregue los ajustes de idioma, se dicta en español de México.
-        const val DEFAULT_LANGUAGE_TAG = "es-MX"
         private const val KEY_REVIEW_TEXT = "review_text"
     }
 }

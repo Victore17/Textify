@@ -36,4 +36,15 @@
     <string name="notes_deleted_message">Nota borrada</string>
     <string name="notes_undo_button">Deshacer</string>
     <string name="notes_copy_success">Texto copiado</string>
+
+    <string name="settings_tab_label">Ajustes</string>
+    <string name="settings_language_section">Idioma de dictado</string>
+    <string name="settings_language_es_mx">Español (México)</string>
+    <string name="settings_language_en_us">Inglés (Estados Unidos)</string>
+    <string name="settings_theme_section">Tema</string>
+    <string name="settings_theme_system">Igual que el sistema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Oscuro</string>
+    <string name="settings_privacy_title">Privacidad</string>
+    <string name="settings_privacy_description">El audio de tu voz nunca se guarda: solo se usa para convertirlo en texto y no se crea ningún archivo de audio, ni temporal ni permanente. El reconocimiento usa primero el reconocedor del dispositivo y, si no está disponible, el reconocedor estándar del sistema, que puede enviar el audio a servidores de Google para transcribirlo.</string>
 </resources>
