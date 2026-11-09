@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -132,7 +133,7 @@ private fun NotesScreen(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
         )
         when (uiState) {
-            is NotesUiState.Loading -> Unit
+            is NotesUiState.Loading -> LoadingContent(modifier = Modifier.fillMaxSize())
             is NotesUiState.Empty -> EmptyNotesContent(
                 onNavigateToRecord = onNavigateToRecord,
                 modifier = Modifier.fillMaxSize(),
@@ -157,6 +158,13 @@ private fun NotesScreen(
                 selectedNote = null
             },
         )
+    }
+}
+
+@Composable
+private fun LoadingContent(modifier: Modifier = Modifier) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
     }
 }
 

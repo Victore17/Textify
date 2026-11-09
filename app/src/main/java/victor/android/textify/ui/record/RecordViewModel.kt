@@ -43,6 +43,7 @@ class RecordViewModel @Inject constructor(
     }
 
     fun onRecordClick() {
+        if (_uiState.value is RecordUiState.Listening) return
         savedStateHandle[KEY_REVIEW_TEXT] = null
         _uiState.value = RecordUiState.Listening()
         viewModelScope.launch {
@@ -52,6 +53,19 @@ class RecordViewModel @Inject constructor(
 
     fun onStopClick() {
         speechToTextEngine.stop()
+    }
+
+    /** Llamar cuando la app pasa a segundo plano (p. ej. al recibir una llamada). */
+    fun onAppBackgrounded() {
+        val listening = _uiState.value as? RecordUiState.Listening ?: return
+        speechToTextEngine.stop()
+        val partialText = listening.partialText.trim()
+        _uiState.value = if (partialText.isEmpty()) {
+            RecordUiState.Idle
+        } else {
+            savedStateHandle[KEY_REVIEW_TEXT] = partialText
+            RecordUiState.Review(partialText)
+        }
     }
 
     fun onRetry() {

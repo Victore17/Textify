@@ -294,7 +294,7 @@ com.<tuapp>.textify
 | 5. Guardar / compartir / cancelar | ☑ | 82/82 | 2026-11-08 |
 | 6. Lista de notas | ☑ | 93/93 | 2026-11-08 |
 | 7. Ajustes | ☑ | 103/103 | 2026-11-08 |
-| 8. Pulido y calidad | ☐ | | |
+| 8. Pulido y calidad | ☑ | 108/108 | 2026-11-08 |
 | 9. Publicación | ☐ | | |
 
 ## Decisiones abiertas (resolver al llegar a la etapa)

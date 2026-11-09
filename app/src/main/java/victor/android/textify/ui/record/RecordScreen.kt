@@ -1,11 +1,15 @@
 package victor.android.textify.ui.record
 
 import android.content.Intent
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +17,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Stop
@@ -27,6 +33,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,6 +46,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.ProcessLifecycleOwner
 import victor.android.textify.R
 import victor.android.textify.speech.SpeechError
 import victor.android.textify.ui.theme.TextifyTheme
@@ -60,6 +70,15 @@ fun RecordScreen(
                 RecordEvent.NoteSaved -> snackbarHostState.showSnackbar(saveSuccessMessage)
             }
         }
+    }
+
+    DisposableEffect(viewModel) {
+        val processLifecycle = ProcessLifecycleOwner.get().lifecycle
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_STOP) viewModel.onAppBackgrounded()
+        }
+        processLifecycle.addObserver(observer)
+        onDispose { processLifecycle.removeObserver(observer) }
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -91,11 +110,18 @@ private fun RecordScreen(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        when (uiState) {
-            is RecordUiState.Idle -> IdleContent(onRecordClick)
-            is RecordUiState.Listening -> ListeningContent(uiState.partialText, onStopClick)
-            is RecordUiState.Review -> ReviewContent(uiState, onSaveClick, onShareClick, onCancelClick)
-            is RecordUiState.Error -> ErrorContent(uiState.error, onRetry)
+        AnimatedContent(
+            targetState = uiState,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            contentKey = { it::class },
+            label = "record_state",
+        ) { state ->
+            when (state) {
+                is RecordUiState.Idle -> IdleContent(onRecordClick)
+                is RecordUiState.Listening -> ListeningContent(state.partialText, onStopClick)
+                is RecordUiState.Review -> ReviewContent(state, onSaveClick, onShareClick, onCancelClick)
+                is RecordUiState.Error -> ErrorContent(state.error, onRetry)
+            }
         }
     }
 }
@@ -105,6 +131,7 @@ private fun IdleContent(onRecordClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.verticalScroll(rememberScrollState()).padding(vertical = 16.dp),
     ) {
         Text(stringResource(R.string.record_idle_hint), style = MaterialTheme.typography.bodyLarge)
         MicButton(
@@ -130,6 +157,7 @@ private fun ListeningContent(partialText: String, onStopClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.verticalScroll(rememberScrollState()).padding(vertical = 16.dp),
     ) {
         Text(stringResource(R.string.record_listening_hint), style = MaterialTheme.typography.bodyLarge)
         MicButton(
@@ -156,6 +184,7 @@ private fun ReviewContent(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.verticalScroll(rememberScrollState()).padding(vertical = 16.dp),
     ) {
         Text(
             text = state.text,
@@ -193,6 +222,7 @@ private fun ErrorContent(error: SpeechError, onRetry: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.verticalScroll(rememberScrollState()).padding(vertical = 16.dp),
     ) {
         Text(
             text = stringResource(errorMessageRes(error)),

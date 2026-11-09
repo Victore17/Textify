@@ -231,4 +231,59 @@ class RecordViewModelTest {
 
         assertEquals(RecordUiState.Listening("de nuevo"), viewModel.uiState.value)
     }
+
+    @Test
+    fun `doble toque rapido en grabar no inicia dos sesiones`() {
+        val viewModel = viewModel()
+
+        viewModel.onRecordClick()
+        viewModel.onRecordClick()
+
+        assertEquals(1, engine.startedLanguages.size)
+    }
+
+    @Test
+    fun `onRetry limpia el estado de error`() {
+        val viewModel = viewModel()
+        viewModel.onRecordClick()
+        engine.emitError(SpeechError.NO_SPEECH)
+        assertEquals(RecordUiState.Error(SpeechError.NO_SPEECH), viewModel.uiState.value)
+
+        viewModel.onRetry()
+
+        assertEquals(RecordUiState.Idle, viewModel.uiState.value)
+    }
+
+    @Test
+    fun `pasar a segundo plano escuchando sin texto parcial detiene el motor y vuelve a Idle`() {
+        val viewModel = viewModel()
+        viewModel.onRecordClick()
+
+        viewModel.onAppBackgrounded()
+
+        assertEquals(1, engine.stopCount)
+        assertEquals(RecordUiState.Idle, viewModel.uiState.value)
+    }
+
+    @Test
+    fun `pasar a segundo plano escuchando con texto parcial lo conserva en Review`() {
+        val viewModel = viewModel()
+        viewModel.onRecordClick()
+        engine.emitPartial("texto parcial")
+
+        viewModel.onAppBackgrounded()
+
+        assertEquals(1, engine.stopCount)
+        assertEquals(RecordUiState.Review("texto parcial"), viewModel.uiState.value)
+    }
+
+    @Test
+    fun `pasar a segundo plano fuera de Listening no hace nada`() {
+        val viewModel = viewModel()
+
+        viewModel.onAppBackgrounded()
+
+        assertEquals(0, engine.stopCount)
+        assertEquals(RecordUiState.Idle, viewModel.uiState.value)
+    }
 }
